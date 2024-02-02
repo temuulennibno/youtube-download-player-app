@@ -1,4 +1,3 @@
-import { Player } from "@/components/Player";
 import { SmallPlayer } from "@/components/SmallPlayer";
 import { StyleSheet, View } from "react-native";
 
