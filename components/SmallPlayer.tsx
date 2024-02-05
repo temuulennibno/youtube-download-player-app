@@ -3,16 +3,28 @@ import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { Audio, InterruptionModeAndroid, InterruptionModeIOS } from "expo-av";
 import Slider from "@react-native-community/slider";
 import { PauseButtonImage, PlayButtonImage, Thumb1Image, Track1Image } from "./icons/ImageIcons";
+import { DownloadItem, getDownloads } from "@/utils/downloads";
 
 export const SmallPlayer = () => {
   const shouldPlay = false;
   const isLoading = false;
+  const [index, setIndex] = useState(0);
   const [sound, setSound] = useState<Audio.Sound | undefined>();
   const [isPlaying, setIsPlaying] = useState(false);
   const [position, setPosition] = useState(0);
   const [duration, setDuration] = useState(0);
+
+  const [downloads, setDownloads] = useState<DownloadItem[]>([]);
+
   const isSeeking = useRef(false);
   const shouldPlayAtEndOfSeek = useRef(false);
+
+  useEffect(() => {
+    (async () => {
+      const downloads = await getDownloads();
+      setDownloads(downloads);
+    })();
+  }, []);
 
   useEffect(() => {
     Audio.setAudioModeAsync({
@@ -35,7 +47,7 @@ export const SmallPlayer = () => {
   const playSound = async () => {
     if (!sound) {
       const { sound: playingSound, status }: any = await Audio.Sound.createAsync(
-        { uri: "https://ia800304.us.archive.org/34/items/PaulWhitemanwithMildredBailey/PaulWhitemanwithMildredBailey-AllofMe.mp3" },
+        { uri: downloads[index].uri },
         { shouldPlay: true, isLooping: false },
         onPlaybackStatusUpdate
       );
